@@ -1,4 +1,4 @@
-# 📘 Assignment 3 Analytical Report
+# Assignment 3 Analytical Report
 
 **Topic:** Optimization of a City Transportation Network (MST)
 **Student:** Sergey Chepurnenko, Group SE-2422
