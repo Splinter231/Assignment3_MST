@@ -1,0 +1,12 @@
+graph G2 {
+  label="Graph 2 (Prim MST Visualization)";
+  fontsize=18;
+  rankdir=LR;
+  node [shape=circle];
+  N4 -- N1 [label="22", color="red", penwidth=3.0];
+  N1 -- N5 [label="32", color="red", penwidth=3.0];
+  N3 -- N5 [label="40", color="red", penwidth=3.0];
+  N2 -- N3 [label="59", color="red", penwidth=3.0];
+  N5 -- N6 [label="84", color="red", penwidth=3.0];
+  N6 -- N7 [label="85", color="red", penwidth=3.0];
+}

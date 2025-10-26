@@ -1,0 +1,19 @@
+graph G4 {
+  label="Graph 4 (Prim MST Visualization)";
+  fontsize=18;
+  rankdir=LR;
+  node [shape=circle];
+  N1 -- N2 [label="21", color="red", penwidth=3.0];
+  N2 -- N3 [label="4", color="red", penwidth=3.0];
+  N3 -- N4 [label="31", color="red", penwidth=3.0];
+  N4 -- N11 [label="6", color="red", penwidth=3.0];
+  N10 -- N11 [label="33", color="red", penwidth=3.0];
+  N8 -- N3 [label="40", color="red", penwidth=3.0];
+  N8 -- N9 [label="48", color="red", penwidth=3.0];
+  N9 -- N6 [label="46", color="red", penwidth=3.0];
+  N5 -- N6 [label="15", color="red", penwidth=3.0];
+  N9 -- N12 [label="51", color="red", penwidth=3.0];
+  N12 -- N13 [label="37", color="red", penwidth=3.0];
+  N14 -- N12 [label="37", color="red", penwidth=3.0];
+  N6 -- N7 [label="84", color="red", penwidth=3.0];
+}
