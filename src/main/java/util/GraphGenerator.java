@@ -60,31 +60,38 @@ public class GraphGenerator {
                 nodes.add("N" + v);
             }
 
-            int edgeCount = (int) (vertices * switch (category) {
-                case "small" -> 1.5;
-                case "medium" -> 2.0;
-                case "large" -> 2.5;
-                default -> 3.0;
+            List<Edge> edges = new ArrayList<>();
+            Set<String> existing = new HashSet<>();
+            for (int v = 1; v < vertices; v++) {
+                String a = "N" + v;
+                String b = "N" + (v + 1);
+                int w = random.nextInt(100) + 1;
+                edges.add(new Edge(a, b, w));
+                existing.add(a + "-" + b);
+                existing.add(b + "-" + a);
+            }
+
+            int extraEdges = (int) (vertices * switch (category) {
+                case "small" -> 0.5;
+                case "medium" -> 1.0;
+                case "large" -> 1.5;
+                default -> 2.0;
             });
 
-            Set<String> edgeSet = new HashSet<>();
-            List<Edge> edges = new ArrayList<>();
-
-            while (edges.size() < edgeCount) {
+            while (edges.size() < vertices - 1 + extraEdges) {
                 String a = nodes.get(random.nextInt(vertices));
                 String b = nodes.get(random.nextInt(vertices));
-                if (!a.equals(b)) {
-                    String edgeKey = a + "-" + b;
-                    String reverseKey = b + "-" + a;
-                    if (!edgeSet.contains(edgeKey) && !edgeSet.contains(reverseKey)) {
-                        edgeSet.add(edgeKey);
-                        edges.add(new Edge(a, b, random.nextInt(100) + 1));
-                    }
+                if (!a.equals(b) && !existing.contains(a + "-" + b) && !existing.contains(b + "-" + a)) {
+                    int w = random.nextInt(100) + 1;
+                    edges.add(new Edge(a, b, w));
+                    existing.add(a + "-" + b);
+                    existing.add(b + "-" + a);
                 }
             }
 
             collection.graphs.add(new Graph(startId++, category, nodes, edges));
         }
+
         return startId;
     }
 

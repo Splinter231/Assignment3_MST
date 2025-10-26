@@ -22,18 +22,32 @@ public class MSTBenchmark {
 
         for (JsonReader.Graph gData : graphList.graphs) {
             System.out.println("▶ Running MST for Graph ID: " + gData.id + " (" + gData.category + ")");
-            List<Edge> edges = new ArrayList<>();
+
+            List<String> cleanNodes = new ArrayList<>(gData.nodes);
+            List<Edge> cleanEdges = new ArrayList<>();
             for (JsonReader.Edge e : gData.edges) {
-                edges.add(new Edge(e.from, e.to, e.weight));
+                cleanEdges.add(new Edge(e.from, e.to, e.weight));
             }
 
-            Graph graph = new Graph(gData.nodes, edges);
+            Graph graph = new Graph(cleanNodes, cleanEdges);
+
+            if (graph.vertexCount() == 0 || graph.edgeCount() == 0) {
+                System.out.println("Skipping graph " + gData.id + " (empty or disconnected)");
+                continue;
+            }
 
             Prim prim = new Prim();
             prim.run(graph);
 
             Kruskal kruskal = new Kruskal();
             kruskal.run(graph);
+
+            if (prim.getTotalCost() != kruskal.getTotalCost()) {
+                System.out.printf("Graph %d: Cost mismatch (Prim=%d, Kruskal=%d)%n",
+                        gData.id, prim.getTotalCost(), kruskal.getTotalCost());
+            } else {
+                System.out.printf("Graph %d: Costs match (MST=%d)%n", gData.id, prim.getTotalCost());
+            }
 
             JsonWriter.MSTResult result = new JsonWriter.MSTResult();
             result.graph_id = gData.id;
@@ -54,12 +68,10 @@ public class MSTBenchmark {
             );
 
             results.add(result);
-
-            System.out.printf("Graph %d done: Prim=%.2fms, Kruskal=%.2fms%n",
-                    gData.id, prim.getExecutionTimeMs(), kruskal.getExecutionTimeMs());
         }
 
         JsonWriter.writeResults(results, outputPath);
+        util.CSVExporter.writeCSV(results, "src/main/resources/data/mst_metrics.csv");
         System.out.println("All graphs processed and results written to " + outputPath);
     }
 

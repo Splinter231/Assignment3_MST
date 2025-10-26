@@ -12,14 +12,18 @@ public class Kruskal {
 
     private static class DisjointSet {
         private final Map<String, String> parent = new HashMap<>();
+        private final Map<String, Integer> rank = new HashMap<>();
 
         public void makeSet(List<String> vertices) {
-            for (String v : vertices) parent.put(v, v);
+            for (String v : vertices) {
+                parent.put(v, v);
+                rank.put(v, 0);
+            }
         }
 
         public String find(String v) {
             if (!parent.get(v).equals(v)) {
-                parent.put(v, find(parent.get(v)));
+                parent.put(v, find(parent.get(v))); // path compression
             }
             return parent.get(v);
         }
@@ -27,8 +31,18 @@ public class Kruskal {
         public void union(String v1, String v2) {
             String root1 = find(v1);
             String root2 = find(v2);
-            if (!root1.equals(root2)) {
+            if (root1.equals(root2)) return;
+
+            int rank1 = rank.get(root1);
+            int rank2 = rank.get(root2);
+
+            if (rank1 < rank2) {
+                parent.put(root1, root2);
+            } else if (rank1 > rank2) {
                 parent.put(root2, root1);
+            } else {
+                parent.put(root2, root1);
+                rank.put(root1, rank1 + 1);
             }
         }
     }
@@ -50,11 +64,14 @@ public class Kruskal {
             operationCount++;
             String root1 = ds.find(edge.getFrom());
             String root2 = ds.find(edge.getTo());
+
+            // добавляем ребро, если вершины ещё не связаны
             if (!root1.equals(root2)) {
                 mstEdges.add(edge);
                 totalCost += edge.getWeight();
-                ds.union(root1, root2);
+                ds.union(edge.getFrom(), edge.getTo()); // правильный union
             }
+
             if (mstEdges.size() == graph.vertexCount() - 1) break;
         }
 
@@ -62,20 +79,8 @@ public class Kruskal {
         executionTimeMs = (end - start) / 1_000_000.0;
     }
 
-    public List<Edge> getMstEdges() {
-        return mstEdges;
-    }
-
-    public int getTotalCost() {
-        return totalCost;
-    }
-
-    public int getOperationCount() {
-        return operationCount;
-    }
-
-    public double getExecutionTimeMs() {
-        return executionTimeMs;
-    }
-
+    public List<Edge> getMstEdges() { return mstEdges; }
+    public int getTotalCost() { return totalCost; }
+    public int getOperationCount() { return operationCount; }
+    public double getExecutionTimeMs() { return executionTimeMs; }
 }

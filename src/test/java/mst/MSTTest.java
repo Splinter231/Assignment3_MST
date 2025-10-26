@@ -118,8 +118,39 @@ public class MSTTest {
         assertTrue(prim.getExecutionTimeMs() >= 0, "Prim execution time negative");
         assertTrue(kruskal.getExecutionTimeMs() >= 0, "Kruskal execution time negative");
 
-        System.out.println("✅ Prim cost: " + prim.getTotalCost() +
+        System.out.println(" Prim cost: " + prim.getTotalCost() +
                 " | Kruskal cost: " + kruskal.getTotalCost() +
                 " | Edges: " + prim.getMstEdges().size());
     }
+    @Test
+    void testMSTCostsFromJson() {
+        String inputPath = "src/main/resources/data/assign_3_input.json";
+        util.JsonReader.GraphList graphList = util.JsonReader.readGraphs(inputPath);
+        assertNotNull(graphList);
+        assertFalse(graphList.graphs.isEmpty());
+
+        for (util.JsonReader.Graph gData : graphList.graphs) {
+            List<Edge> edges = new ArrayList<>();
+            for (util.JsonReader.Edge e : gData.edges) {
+                edges.add(new Edge(e.from, e.to, e.weight));
+            }
+
+            Graph graph = new Graph(gData.nodes, edges);
+
+            Prim prim = new Prim();
+            Kruskal kruskal = new Kruskal();
+            prim.run(graph);
+            kruskal.run(graph);
+
+            assertEquals(prim.getTotalCost(), kruskal.getTotalCost(),
+                    "MST cost mismatch in Graph ID " + gData.id);
+            assertEquals(graph.vertexCount() - 1, prim.getMstEdges().size(),
+                    "Prim MST edge count invalid in Graph ID " + gData.id);
+            assertEquals(graph.vertexCount() - 1, kruskal.getMstEdges().size(),
+                    "Kruskal MST edge count invalid in Graph ID " + gData.id);
+
+            System.out.println("Graph " + gData.id + " MST OK | Cost: " + prim.getTotalCost());
+        }
+    }
+
 }
